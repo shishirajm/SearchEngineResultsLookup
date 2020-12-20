@@ -23,6 +23,7 @@
   </ItemGroup>
     
   <Target Name="RunMyYarnCommands" BeforeTargets="YarnBuild">
+    <Yarn Command="install" WorkingDirectory="$(SpaRoot)" />
     <Yarn Command="build" WorkingDirectory="$(SpaRoot)" />
   </Target>
     
