@@ -2,7 +2,6 @@
 {
     public interface ISearchEngineProvider
     {
-        string Provider { get; }
         string GetUrl(string keyWords, int pageIndex);
     }
 

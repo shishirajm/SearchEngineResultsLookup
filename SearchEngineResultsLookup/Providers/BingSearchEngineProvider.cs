@@ -11,8 +11,6 @@ namespace SearchEngineResultsLookup.Providers
             _logger = logger;
         }
 
-        public string Provider => SearchProviders.Bing;
-
         public string GetUrl(string keyWords, int pageIndex)
         {
             var first = (pageIndex * 10) + 1;

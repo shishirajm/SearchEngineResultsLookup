@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Autofac.Features.Indexed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using SearchEngineResultsLookup.Parsers;
@@ -16,11 +17,10 @@ namespace SearchEngineResultsLookup.Services
         private readonly IParser _parser;
         private readonly ILogger<SearchEngineService> _logger;
         private readonly IMemoryCache _cache;
-        private readonly IEnumerable<ISearchEngineProvider> _searchEngineProviders;
-        const int _hoursToCacheResults = 1; // This can be placed in App configuration or Provider Configuration
-        const int _numOfResults = 100;
+        private readonly IIndex<string, ISearchEngineProvider> _searchEngineProviders;
 
-        public SearchEngineService(IHttpClientFactory clientFactory, IParser parser, ILogger<SearchEngineService> logger, IMemoryCache memoryCache, IEnumerable<ISearchEngineProvider> searchEngineProviders)
+        public SearchEngineService(IHttpClientFactory clientFactory, IParser parser, ILogger<SearchEngineService> logger,
+            IMemoryCache memoryCache, IIndex<string, ISearchEngineProvider> searchEngineProviders)
         {
             _clientFactory = clientFactory;
             _parser = parser;
@@ -36,10 +36,10 @@ namespace SearchEngineResultsLookup.Services
 
             if (!_cache.TryGetValue(key, out results))
             {
-                var rawBody = await Search(_numOfResults, keyword, provider);
-                results = _parser.ParseResults(rawBody, provider).Take(_numOfResults);
+                var rawBody = await Search(keyword, provider);
+                results = _parser.ParseResults(rawBody, provider).Take(Config.NumOfResults);
 
-                var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(_hoursToCacheResults));
+                var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(Config.HoursToCacheResults));
                 _cache.Set(key, results, cacheEntryOptions);
             }
 
@@ -53,10 +53,12 @@ namespace SearchEngineResultsLookup.Services
             return positionOfUrl;
         }
 
-        private async Task<string> Search(int numOfResults, string keyword, string provider)
+        private async Task<string> Search(string keyword, string provider)
         {
             var tasks = new List<Task>();
-            var numOfPages = (numOfResults % 10 == 0) ? numOfResults / 10 : numOfResults / 10 + 1;
+
+            var numOfPages = calculateNumOfPages();
+
             var searchResults = new string[numOfPages];
             for (int i = 0; i < numOfPages; i++)
             {
@@ -84,8 +86,9 @@ namespace SearchEngineResultsLookup.Services
         {
             try
             {
+                var searchEngineProvider = _searchEngineProviders[provider == SearchProviders.Bing? SearchProviders.Bing : SearchProviders.Google];
                 _logger.LogInformation($"Starting Request {i}");
-                var request = new HttpRequestMessage(HttpMethod.Get, GetProviderInstance(provider).GetUrl(keyword, i));
+                var request = new HttpRequestMessage(HttpMethod.Get, searchEngineProvider.GetUrl(keyword, i));
                 var httpClient = _clientFactory.CreateClient();
                 var response = await httpClient.SendAsync(request);
                 _logger.LogInformation($"Response {i}");
@@ -106,25 +109,17 @@ namespace SearchEngineResultsLookup.Services
             }
         }
 
-        private ISearchEngineProvider GetProviderInstance(string provider)
-        {
-            // I tried to setit up using named instances and since it was taking 
-            // longer to figure out had to implement this way
-            switch (provider)
-            {
-                case SearchProviders.Google:
-                    return _searchEngineProviders.Where(p => p.Provider == SearchProviders.Google).First();
-                case SearchProviders.Bing:
-                    return _searchEngineProviders.Where(p => p.Provider == SearchProviders.Bing).First();
-                default:
-                    throw new ArgumentException();
-            }
-        }
-
         private string GetCacheKey(string keyWords, string provider)
         {
             // If needed url can be added to form the key so lookup time reduces
             return keyWords.GetHashCode() + provider;
+        }
+
+        private int calculateNumOfPages()
+        {
+            // This calcualtion can be moved to individual providers
+            // if they return different number of results per page
+            return (Config.NumOfResults % 10 == 0) ? Config.NumOfResults / 10 : Config.NumOfResults / 10 + 1;
         }
     }
 }

@@ -85,14 +85,13 @@ namespace SearchEngineResultsLookup
         public void ConfigureContainer(ContainerBuilder builder)
         {
             // Current thing could have been done with Microsoft DI
-            // I am unhappy with the way I have registered here
-            // thought of using named instances but was unsuccessful
+            // I feel Keyed services is neater with Autofac hence the choice
 
-            builder.RegisterType<GoogleSearchEngineProvider>().As<ISearchEngineProvider>().SingleInstance();
-            builder.RegisterType<GoogleParserConfiguration>().As<IParserConfiguration>().SingleInstance();
+            builder.RegisterType<GoogleSearchEngineProvider>().Keyed<ISearchEngineProvider>(SearchProviders.Google).SingleInstance();
+            builder.RegisterType<BingSearchEngineProvider>().Keyed<ISearchEngineProvider>(SearchProviders.Bing).SingleInstance();
 
-            builder.RegisterType<BingSearchEngineProvider>().As<ISearchEngineProvider>().SingleInstance();
-            builder.RegisterType<BingParserConfiguration>().As<IParserConfiguration>().SingleInstance();
+            builder.RegisterType<GoogleParserConfiguration>().Keyed<IParserConfiguration>(SearchProviders.Google).SingleInstance();
+            builder.RegisterType<BingParserConfiguration>().Keyed<IParserConfiguration>(SearchProviders.Bing).SingleInstance();
 
             builder.RegisterType<SearchEngineService>().As<ISearchEngineService>().SingleInstance();
             builder.RegisterType<Parser>().As<IParser>().SingleInstance();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Autofac.Features.Indexed;
 using Microsoft.Extensions.Logging;
 using SearchEngineResultsLookup.Providers;
 
@@ -14,9 +15,9 @@ namespace SearchEngineResultsLookup.Parsers
         // Assumption here the html structure wont change is brittle
 
         private readonly ILogger<Parser> _logger;
-        private readonly IEnumerable<IParserConfiguration> _parserConfigurations;
+        private readonly IIndex<string, IParserConfiguration> _parserConfigurations;
 
-        public Parser(ILogger<Parser> logger, IEnumerable<IParserConfiguration> parserConfigurations)
+        public Parser(ILogger<Parser> logger, IIndex<string, IParserConfiguration> parserConfigurations)
         {
             _logger = logger;
             _parserConfigurations = parserConfigurations;
@@ -41,16 +42,16 @@ namespace SearchEngineResultsLookup.Parsers
             var body = rawBody;
             var divs = new List<string>();
 
-            while (body.Contains(GetParserInstance(provider).NodeStartPattern))
+            while (body.Contains(GetParserConfigInstance(provider).NodeStartPattern))
             {
-                var beginningOfNode = body.IndexOf(GetParserInstance(provider).NodeStartPattern);
+                var beginningOfNode = body.IndexOf(GetParserConfigInstance(provider).NodeStartPattern);
                 body = body.Substring(beginningOfNode);
                 var div = ExtractResultDiv(body, provider);
                 body = (body.Length > div.Length) ? body.Substring(div.Length) : "";
                 divs.Add(div);
             }
 
-            var webResultDivs = GetParserInstance(provider).Filter.Item1 ? divs.Where(div => div.Contains(GetParserInstance(provider).Filter.Item2)) : divs;
+            var webResultDivs = GetParserConfigInstance(provider).Filter.Item1 ? divs.Where(div => div.Contains(GetParserConfigInstance(provider).Filter.Item2)) : divs;
 
             return webResultDivs;
         }
@@ -71,27 +72,25 @@ namespace SearchEngineResultsLookup.Parsers
             // Might feel like bit of magic
             while (flag)
             {
-                lastIndex = text.IndexOf(GetParserInstance(provider).DivEndPattern, startIndex);
-                var subText = text.Substring(0, lastIndex + GetParserInstance(provider).DivEndPattern.Length);
-                var divStartNum = Regex.Matches(subText, GetParserInstance(provider).DivStartPattern).Count;
-                var divCloseNum = Regex.Matches(subText, GetParserInstance(provider).DivEndPattern).Count;
-                startIndex = lastIndex + GetParserInstance(provider).DivEndPattern.Length;
+                lastIndex = text.IndexOf(GetParserConfigInstance(provider).DivEndPattern, startIndex);
+                var subText = text.Substring(0, lastIndex + GetParserConfigInstance(provider).DivEndPattern.Length);
+                var divStartNum = Regex.Matches(subText, GetParserConfigInstance(provider).DivStartPattern).Count;
+                var divCloseNum = Regex.Matches(subText, GetParserConfigInstance(provider).DivEndPattern).Count;
+                startIndex = lastIndex + GetParserConfigInstance(provider).DivEndPattern.Length;
                 flag = (divStartNum - divCloseNum) > 0;
             }
 
-            return lastIndex + GetParserInstance(provider).DivEndPattern.Length;
+            return lastIndex + GetParserConfigInstance(provider).DivEndPattern.Length;
         }
 
-        private IParserConfiguration GetParserInstance(string provider)
+        private IParserConfiguration GetParserConfigInstance(string provider)
         {
             switch (provider)
             {
-                case SearchProviders.Google:
-                    return _parserConfigurations.Where(p => p.Provider == SearchProviders.Google).First();
                 case SearchProviders.Bing:
-                    return _parserConfigurations.Where(p => p.Provider == SearchProviders.Bing).First();
+                    return _parserConfigurations[SearchProviders.Bing];
                 default:
-                    throw new ArgumentException();
+                    return _parserConfigurations[SearchProviders.Google];
             }
         }
     }

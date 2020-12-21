@@ -11,8 +11,6 @@ namespace SearchEngineResultsLookup.Providers
             _logger = logger;
         }
 
-        public string Provider => SearchProviders.Google;
-
         public string GetUrl(string keyWords, int pageIndex)
         {
             var start = pageIndex * 10;
