@@ -2,13 +2,6 @@ import React, { ReactElement, useState, useEffect } from 'react';
 
 import { Container, Header} from './styles';
 
-export interface Lookup {
-  date: string;
-  temperatureC: number;
-  temperatureF: number;
-  summary: string;
-}
-
 export default function Home(): ReactElement {
 
   const initialState: number[] = [];
@@ -16,10 +9,10 @@ export default function Home(): ReactElement {
 
   const [keyWord, setKeyWord] = useState('e-settlements');
   const [url, setUrl] = useState('www.sympli.com.au');
-  const [searchEngine, setSearchEngine] = useState('Google');
+  const [searchEngine, setSearchEngine] = useState(searchEngines[0]);
   const [result, setResult] = useState(initialState);
   const [fetched, setFetched] = useState(false);
-  const [error, setError] = useState({hasError: false, errorMsg: ''});
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false); 
 
   useEffect(() => {
@@ -28,20 +21,20 @@ export default function Home(): ReactElement {
 
   function handleLookup(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void {
     e.preventDefault();
+    
     setLoading(true);
     setFetched(false);
+    setError('');
+    const completeUrl = `api/lookup?keyWord=${encodeURI(keyWord)}&url=${encodeURI(url)}&searchEngine=${searchEngine}`;
 
-    fetch(`api/lookup?keyWord=${keyWord}&url=${url}&searchEngine=${searchEngine}`)
+    fetch(completeUrl)
       .then(response => response.json() as Promise<number[]>)    
       .then(data => {
-        console.log(data);
         setResult(data);
-        setError({hasError: false, errorMsg: ''});
         setFetched(true);
       })
       .catch(errorMsg => {
-        console.log(errorMsg);
-        setError({hasError: true, errorMsg: 'Error retrieving results. Check inputs.'});
+        setError('Error retrieving results. Check inputs.');
       })
       .finally(() => {
         setLoading(false);
@@ -53,7 +46,7 @@ export default function Home(): ReactElement {
       <Header>
         <h2>Lookup Search Engine</h2>
         <div>
-          Key Word:
+          Keyword:
           <input
               value={keyWord}
               onChange={(e): void => setKeyWord(e.target.value)}
@@ -88,8 +81,8 @@ export default function Home(): ReactElement {
         </p>
       </div>
       } 
-      { error.hasError &&
-        <div>{error.errorMsg}</div>
+      { error !== '' &&
+        <div>{error}</div>
       }
       {
         loading && <div>Finding the {url} in {keyWord} search on {searchEngine}.</div>

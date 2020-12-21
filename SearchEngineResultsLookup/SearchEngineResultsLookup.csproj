@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SpaRoot>ClientApp\</SpaRoot>
-    <YarnBuildCommand Condition="'$(Configuration)' == 'Release'">install</YarnBuildCommand>
+    <YarnBuildCommand Condition="'$(Configuration)' == 'Release'">install --frozen-lockfile</YarnBuildCommand>
   </PropertyGroup>
     
   <PropertyGroup>
@@ -20,10 +20,11 @@
     <Folder Include="Services\" />
     <Folder Include="Parsers\" />
     <Folder Include="Providers\" />
+    <Folder Include="ClientApp\src\assets\" />
   </ItemGroup>
     
   <Target Name="RunMyYarnCommands" BeforeTargets="YarnBuild">
-    <Yarn Command="install" WorkingDirectory="$(SpaRoot)" />
+    <Yarn Command="install  --frozen-lockfile" WorkingDirectory="$(SpaRoot)" />
     <Yarn Command="build" WorkingDirectory="$(SpaRoot)" />
   </Target>
     

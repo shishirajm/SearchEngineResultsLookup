@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SearchEngineResultsLookup.Services;
 using Microsoft.Extensions.Logging;
 using SearchEngineResultsLookup.Providers;
+using System.Text.RegularExpressions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,19 +23,19 @@ namespace SearchEngineResultsLookup.Controllers
             _logger = logger;
         }
 
-        // GET: api/lookup?keyWord=e-settlements&url=.com.au&searchEngine=bing
+        // GET: api/lookup?keyWord=e-settlements&url=www.abc.com.au&searchEngine=bing
         [HttpGet]
-        public async Task<IActionResult> Get(string keyWord, string url, string searchEngine)
+        public async Task<IActionResult> Get(string keyword, string url, string searchEngine)
         {
             var start = DateTime.Now;
 
-            _logger.LogInformation($"Input: {keyWord} and {url}");
+            _logger.LogInformation($"Input: {keyword} and {url}");
 
-            // This validation can be a different class
-            if (string.IsNullOrWhiteSpace(keyWord) || string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(searchEngine)) return BadRequest("Invalid keyword");
+            // This validation can be in a different class
+            if (string.IsNullOrWhiteSpace(keyword) || string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(searchEngine)) return BadRequest("Invalid keyword");
 
-            var results = await _searchEngineService.FindTheUrlOccurenceForKeyWordSearch(keyWord, url, MapToSearchProvider(searchEngine));
-            _logger.LogInformation($"Input: {keyWord} and {url} took {DateTime.Now - start}");
+            var results = await _searchEngineService.FindTheUrlOccurenceForKeyWordSearch(Regex.Unescape(keyword), Regex.Unescape(url), MapToSearchProvider(searchEngine));
+            _logger.LogInformation($"Input: {keyword} and {url} took {DateTime.Now - start}");
             return Ok(results);
         }
 

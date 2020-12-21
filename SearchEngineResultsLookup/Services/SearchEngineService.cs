@@ -29,14 +29,14 @@ namespace SearchEngineResultsLookup.Services
             _searchEngineProviders = searchEngineProviders;
         }
 
-        public async Task<IEnumerable<int>> FindTheUrlOccurenceForKeyWordSearch(string keyWords, string url, string provider)
+        public async Task<IEnumerable<int>> FindTheUrlOccurenceForKeyWordSearch(string keyword, string url, string provider)
         {
             IEnumerable<string> results;
-            var key = GetCacheKey(keyWords, provider);
+            var key = GetCacheKey(keyword, provider);
 
             if (!_cache.TryGetValue(key, out results))
             {
-                var rawBody = await Search(_numOfResults, keyWords, provider);
+                var rawBody = await Search(_numOfResults, keyword, provider);
                 results = _parser.ParseResults(rawBody, provider).Take(_numOfResults);
 
                 var cacheEntryOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(_hoursToCacheResults));
@@ -53,22 +53,14 @@ namespace SearchEngineResultsLookup.Services
             return positionOfUrl;
         }
 
-        public async Task<string> Temp(int i, string keyWords, string provider)
-        {
-            _logger.LogInformation($"Temp {i}");
-            var searchResults = new string[i];
-            await QuerySearchEngineAsync(i - 1, keyWords, searchResults, provider);
-            return searchResults[i - 1];
-        }
-
-        private async Task<string> Search(int numOfResults, string keyWords, string provider)
+        private async Task<string> Search(int numOfResults, string keyword, string provider)
         {
             var tasks = new List<Task>();
             var numOfPages = (numOfResults % 10 == 0) ? numOfResults / 10 : numOfResults / 10 + 1;
             var searchResults = new string[numOfPages];
             for (int i = 0; i < numOfPages; i++)
             {
-                tasks.Add(QuerySearchEngineAsync(i, keyWords, searchResults, provider));
+                tasks.Add(QuerySearchEngineAsync(i, keyword, searchResults, provider));
             }
 
             Task t = Task.WhenAll(tasks);
@@ -84,16 +76,16 @@ namespace SearchEngineResultsLookup.Services
             }
             else
             {
-                throw new Exception($"Failed to Query for Key word: {keyWords}");
+                throw new Exception($"Failed to Query for Key word: {keyword}");
             }
         }
 
-        private async Task QuerySearchEngineAsync(int i, string keyWords, string[] searchResults, string provider)
+        private async Task QuerySearchEngineAsync(int i, string keyword, string[] searchResults, string provider)
         {
             try
             {
                 _logger.LogInformation($"Starting Request {i}");
-                var request = new HttpRequestMessage(HttpMethod.Get, GetProviderInstance(provider).GetUrl(keyWords, i));
+                var request = new HttpRequestMessage(HttpMethod.Get, GetProviderInstance(provider).GetUrl(keyword, i));
                 var httpClient = _clientFactory.CreateClient();
                 var response = await httpClient.SendAsync(request);
                 _logger.LogInformation($"Response {i}");
