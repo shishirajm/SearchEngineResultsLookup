@@ -42,13 +42,22 @@ namespace SearchEngineResultsLookup.Parsers
             var body = rawBody;
             var divs = new List<string>();
 
+            if (string.IsNullOrWhiteSpace(GetParserConfigInstance(provider).NodeStartPattern)) return divs;
+
             while (body.Contains(GetParserConfigInstance(provider).NodeStartPattern))
             {
                 var beginningOfNode = body.IndexOf(GetParserConfigInstance(provider).NodeStartPattern);
                 body = body.Substring(beginningOfNode);
                 var div = ExtractResultDiv(body, provider);
-                body = (body.Length > div.Length) ? body.Substring(div.Length) : "";
-                divs.Add(div);
+                if (div.Item1) // If found
+                {
+                    divs.Add(div.Item2);
+                    body = body.Substring(div.Item2.Length); // Remove the processed part
+                }
+                else // If not found
+                {
+                    body = "";
+                }
             }
 
             var webResultDivs = GetParserConfigInstance(provider).Filter.Item1 ? divs.Where(div => div.Contains(GetParserConfigInstance(provider).Filter.Item2)) : divs;
@@ -56,10 +65,10 @@ namespace SearchEngineResultsLookup.Parsers
             return webResultDivs;
         }
 
-        private string ExtractResultDiv(string text, string provider)
+        private (bool, string) ExtractResultDiv(string text, string provider)
         {
             var endOfNode = GetLastIndexOfNode(text, provider);
-            return text.Substring(0, endOfNode);
+            return endOfNode < 0? (false, ""): (true, text.Substring(0, endOfNode));
         }
 
         private int GetLastIndexOfNode(string text, string provider)
@@ -77,10 +86,10 @@ namespace SearchEngineResultsLookup.Parsers
                 var divStartNum = Regex.Matches(subText, GetParserConfigInstance(provider).DivStartPattern).Count;
                 var divCloseNum = Regex.Matches(subText, GetParserConfigInstance(provider).DivEndPattern).Count;
                 startIndex = lastIndex + GetParserConfigInstance(provider).DivEndPattern.Length;
-                flag = (divStartNum - divCloseNum) > 0;
+                flag = (divStartNum - divCloseNum) > 0 && startIndex < text.Length && lastIndex >= 0;
             }
 
-            return lastIndex + GetParserConfigInstance(provider).DivEndPattern.Length;
+            return lastIndex < 0? -1: lastIndex + GetParserConfigInstance(provider).DivEndPattern.Length;
         }
 
         private IParserConfiguration GetParserConfigInstance(string provider)
