@@ -48,12 +48,12 @@ Access: https://localhost:5001/
 - I have just added few tests, I know the HTTP/fetch requests on the Backend and Front end can be mocked. There is scope for hundreds of tests cases, both on front end and backend. Only have set up test for few scenarios.
 - I have used parallel tasks to query google and bing, I know there are few optimisation needs to be done for number of threads to spawn, but haven't included it here.
 - Since the requirements said production quality code, there are lot of things which could have been done or done better like:
-  * Backend
+  * On Backend:
   * Better error handling
   * Using and configuring the appsettings
   * Standardising the log format
   * Lot more unit tests
-  * Frontend
+  * On Frontend:
   * Could have used debounce
   * Felt redux would be over kill
   * I know UI can be lot better (But this is what happens when developer designs :) )
