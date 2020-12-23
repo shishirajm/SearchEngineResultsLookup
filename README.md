@@ -49,6 +49,7 @@ Access: https://localhost:5001/
 - I have just added few tests, I know the HTTP/fetch requests on the Backend and Front end can be mocked. There is scope for hundreds of tests cases, both on front end and backend. Only have set up test for few scenarios.
 - I have used parallel tasks to query google and bing, I know there are few optimisation needs to be done for number of threads to spawn, but haven't included it here.
 - Caching could have been on separate class, just writing wrapper felt un-necessary.
+- Very first time when dotnet publish runs, yarn install fails half way, secnd time it works. Have to be fixed.
 - Lot of things could have been done or done better like:
   * On Backend:
   * Better error handling
