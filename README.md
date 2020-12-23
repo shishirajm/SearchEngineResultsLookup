@@ -37,17 +37,19 @@ Access: https://localhost:5001/
 - I have tried to showcase:
   * On Backend
   * Dependency Injection: Autofac
-  * Parallel execution of tasks: async await
+  * Parallel execution of query t google and bing: async await
   * Simple caching: IMemoryCache from Microsoft
   * Sample unit tests: Nunit, NSubstitue
   * On Frontend
   * React component, React Hooks with TypeScript
   * Styled components
   * Sample unit tests: Jest and Enzyme
+- I could have designed the backend differently with SearchProvider composed on Http helper and Parser, I have just focused here on reducing duplication and use DI and interfaces. If more SeachEngine needs to be supported, just HTML which contains data and URL to query are needed and can implement couple on interfaces.
 - In parser storing the whole node though we need only the URL, just that if we need the title or something later can be extracted. It can be cleaned up. Currently it wont impact the results if the whole URL is provided.
 - I have just added few tests, I know the HTTP/fetch requests on the Backend and Front end can be mocked. There is scope for hundreds of tests cases, both on front end and backend. Only have set up test for few scenarios.
 - I have used parallel tasks to query google and bing, I know there are few optimisation needs to be done for number of threads to spawn, but haven't included it here.
-- Since the requirements said production quality code, there are lot of things which could have been done or done better like:
+- Caching could have been on separate class, just writing wrapper felt un-necessary.
+- Lot of things could have been done or done better like:
   * On Backend:
   * Better error handling
   * Using and configuring the appsettings
