@@ -33,7 +33,7 @@ Access: https://localhost:5001/
 
 Access: https://localhost:5001/
 
-## Decisions/Short cuts
+## Decisions/Shortcuts
 - I have tried to showcase:
   * On Backend
   * Dependency Injection: Autofac
