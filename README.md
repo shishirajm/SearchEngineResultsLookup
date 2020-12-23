@@ -28,8 +28,12 @@ Access: https://localhost:5001/
   * ClientApp inside the solution
 - Run command
   * yarn install
+  * Build manually: yarn build (Note it run when server starts)
+  * Only work on front end: yarn start 
+  * Run tests: yarn test
 - Open the sln file in visual studio
   * Usual debugging process by pressing F5 or Running the solution
+  * Running tests: dotnet test on root folder or right click project file on VS and run tests.
 
 Access: https://localhost:5001/
 
@@ -58,11 +62,12 @@ Access: https://localhost:5001/
   * Using and configuring the appsettings
   * Standardising the log format
   * Lot more unit tests
+  * Build and packaging scripts.
   * On Frontend:
   * Could have used debounce
   * Felt redux would be over kill
   * I know UI can be lot better (But this is what happens when developer designs :) )
-  * Lot more unit tests
+  * Lot more unit tests 
  
  # Addressing Performance
  - At code level, Parallel.foreach and Task.WhenAll can be combined and optimized to get best result querying.
