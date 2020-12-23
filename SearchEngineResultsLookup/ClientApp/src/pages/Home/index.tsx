@@ -7,7 +7,7 @@ export default function Home(): ReactElement {
   const initialState: number[] = [];
   const searchEngines: string[] = ['Google', 'Bing'];
 
-  const [keyWord, setKeyWord] = useState('e-settlements');
+  const [keyword, setKeyword] = useState('e-settlements');
   const [url, setUrl] = useState('www.sympli.com.au');
   const [searchEngine, setSearchEngine] = useState(searchEngines[0]);
   const [result, setResult] = useState(initialState);
@@ -24,7 +24,7 @@ export default function Home(): ReactElement {
     setLoading(true);
     setFetched(false);
     setError('');
-    const completeUrl = `api/lookup?keyWord=${encodeURI(keyWord)}&url=${encodeURI(url)}&searchEngine=${searchEngine}`;
+    const completeUrl = `api/lookup?keyword=${encodeURI(keyword)}&url=${encodeURI(url)}&searchEngine=${searchEngine}`;
 
     try {
       const response = await fetch(completeUrl);
@@ -48,12 +48,12 @@ export default function Home(): ReactElement {
         <Section>
           <Title>Lookup Search Engine</Title>
           <Div>
-            <Label>Keyword:</Label>
+            <Label>keyword:</Label>
             <Input
-                value={keyWord}
-                onChange={(e): void => setKeyWord(e.target.value)}
+                value={keyword}
+                onChange={(e): void => setKeyword(e.target.value)}
                 type="text"
-                id="keyWord"
+                id="keyword"
                 placeholder="e-settlements"
               />
             </Div>
@@ -91,7 +91,7 @@ export default function Home(): ReactElement {
             <Result>{error}</Result>
           }
           {
-            loading && <Result>Finding the {url} in {keyWord} search on {searchEngine}.</Result>
+            loading && <Result>Finding the {url} in {keyword} search on {searchEngine}.</Result>
           }
         </Section>
       </Wrapper>
