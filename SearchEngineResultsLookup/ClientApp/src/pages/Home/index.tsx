@@ -1,6 +1,6 @@
 import React, { ReactElement, useState, useEffect } from 'react';
 
-import { Container, Wrapper, Section, Title, Label, Input, Select, Result} from './styles';
+import { Container, Wrapper, Section, Title, Label, Input, Select, Result, Button, Div} from './styles';
 
 export default function Home(): ReactElement {
 
@@ -19,26 +19,27 @@ export default function Home(): ReactElement {
     document.title = `${searchEngine} Lookup`;
   });
 
-  function handleLookup(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void {
-    e.preventDefault();
+  async function handleLookup() {
     
     setLoading(true);
     setFetched(false);
     setError('');
     const completeUrl = `api/lookup?keyWord=${encodeURI(keyWord)}&url=${encodeURI(url)}&searchEngine=${searchEngine}`;
 
-    fetch(completeUrl)
-      .then(response => response.json() as Promise<number[]>)    
-      .then(data => {
+    try {
+      const response = await fetch(completeUrl);
+      if (response.ok) {
+        const data = await response.json();
         setResult(data);
         setFetched(true);
-      })
-      .catch(errorMsg => {
-        setError('Error retrieving results. Check inputs.');
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      } else {
+        setError(`Error: ${response.statusText}`);
+      }
+    } catch (ex) {
+      console.log();
+      setError('Error retrieving results. Check inputs.');
+    }
+    setLoading(false);
   }
 
   return (
@@ -46,7 +47,7 @@ export default function Home(): ReactElement {
       <Wrapper>
         <Section>
           <Title>Lookup Search Engine</Title>
-          <div>
+          <Div>
             <Label>Keyword:</Label>
             <Input
                 value={keyWord}
@@ -55,8 +56,8 @@ export default function Home(): ReactElement {
                 id="keyWord"
                 placeholder="e-settlements"
               />
-            </div>
-            <div>
+            </Div>
+            <Div>
             <Label>Url to lookup:</Label>
               <Input
                 value={url}
@@ -65,26 +66,26 @@ export default function Home(): ReactElement {
                 id="url"
                 placeholder="www.sympli.com.au"
               />
-          </div>
-          <div>
+          </Div>
+          <Div>
           <Label>Search Engine:</Label>
             <Select name="searchEngine" value={searchEngine} onChange={(e) => {setSearchEngine(e.target.value)}}>
               {searchEngines.map(o => <option key={o} value={o}>{o}</option>)}
             </Select>
-          </div>
-          <div><a href="/" onClick={(e): void => handleLookup(e)}>Lookup</a></div>
+          </Div>
+          <Div><Button onClick={async() => {await handleLookup();}}>Lookup</Button></Div>
         </Section>
       </Wrapper>
       <Wrapper>
         <Section>
           <Label>Search Results:</Label>
           {fetched &&
-          <div>
+          <Div>
             <Result><b>{url}</b> found in <b>{result.length}</b> places.</Result>
             <Result>
               Position of Result: {result.join(', ')}
             </Result>
-          </div>
+          </Div>
           } 
           { error !== '' &&
             <Result>{error}</Result>
