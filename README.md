@@ -2,45 +2,45 @@
 Look up for the position of URL for Keywords based search.
 
 ## Build Prerequisites
-* Install Yarn: https://classic.yarnpkg.com/en/docs/install/#mac-stable
-* Install Node and NPM: https://nodejs.org/en/download/
-*  Install dotnet: https://dotnet.microsoft.com/download/dotnet-core/3.1
+- Install Yarn: https://classic.yarnpkg.com/en/docs/install/#mac-stable
+- Install Node and NPM: https://nodejs.org/en/download/
+- Install dotnet: https://dotnet.microsoft.com/download/dotnet-core/3.1
 
 - Clone Repo
-* git clone git@github.com:shishirajm/SearchEngineResultsLookup.git
+ * git clone git@github.com:shishirajm/SearchEngineResultsLookup.git
 
 ## Building and Running
 
 - Navigate to folder
- - cd SearchEngineResultsLookup
+ * cd SearchEngineResultsLookup
 - Create artefacts
- - dotnet publish -o ./out -c Release
- - Note: if it fails first time try again
+ * dotnet publish -o ./out -c Release
+ * Note: if it fails first time try again
 - Navigate
- -cd out
+ * cd out
 - Run
- - dotnet SearchEngineResultsLookup.dll
+ * dotnet SearchEngineResultsLookup.dll
 
 Access: https://localhost:5001/
 
 ## Building and Running: Developer
 - After cloning navigate to
- - ClientApp inside the solution
+ * ClientApp inside the solution
 - Run command
- - yarn install
+ * yarn install
 - Open the sln file in visual studio
- - Usual debugging process by pressing F5 or Running the solution
+ * Usual debugging process by pressing F5 or Running the solution
 
 Access: https://localhost:5001/
 
 ## Decisions/Short cuts
 - I have tried to showcase:
-  On Backend
+  * On Backend
   * Dependency Injection: Autofac
   * Parallel execution of tasks: async await
   * Simple caching: IMemoryCache from Microsoft
   * Sample unit tests: Nunit, NSubstitue
-  On Frontend
+  * On Frontend
   * React component, React Hooks with TypeScript
   * Styled components
   * Sample unit tests: Jest and Enzyme
