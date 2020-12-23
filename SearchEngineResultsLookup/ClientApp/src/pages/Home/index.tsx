@@ -58,17 +58,17 @@ export default function Home(): ReactElement {
               />
             </Div>
             <Div>
-            <Label>Url to lookup:</Label>
-              <Input
-                value={url}
-                onChange={(e): void => setUrl(e.target.value)}
-                type="text"
-                id="url"
-                placeholder="www.sympli.com.au"
-              />
+              <Label>Url to lookup:</Label>
+                <Input
+                  value={url}
+                  onChange={(e): void => setUrl(e.target.value)}
+                  type="text"
+                  id="url"
+                  placeholder="www.sympli.com.au"
+                />
           </Div>
           <Div>
-          <Label>Search Engine:</Label>
+            <Label>Search Engine:</Label>
             <Select name="searchEngine" value={searchEngine} onChange={(e) => {setSearchEngine(e.target.value)}}>
               {searchEngines.map(o => <option key={o} value={o}>{o}</option>)}
             </Select>

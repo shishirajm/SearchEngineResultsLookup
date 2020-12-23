@@ -37,6 +37,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/enzyme": "^3.10.8",
     "@types/jest": "^24.0.25",
     "@types/node": "^13.1.2",
     "@types/react": "^16.9.17",
@@ -45,6 +46,9 @@
     "@types/styled-components": "^4.4.1",
     "@typescript-eslint/eslint-plugin": "^2.14.0",
     "@typescript-eslint/parser": "^2.14.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.5",
+    "enzyme-to-json": "^3.6.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.9.0",
@@ -53,6 +57,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^1.7.0",
+    "jest-enzyme": "^7.1.2",
     "prettier": "^1.19.1",
     "typescript": "^3.7.4"
   }
