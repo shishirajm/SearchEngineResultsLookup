@@ -36,11 +36,13 @@ Access: https://localhost:5001/
 ## Decisions/Shortcuts
 - I have tried to showcase:
   * On Backend
+  * Fully working functionality.
   * Dependency Injection: Autofac
   * Parallel execution of query t google and bing: async await
   * Simple caching: IMemoryCache from Microsoft
   * Sample unit tests: Nunit, NSubstitue
   * On Frontend
+  * Working functionality.
   * React component, React Hooks with TypeScript
   * Styled components
   * Sample unit tests: Jest and Enzyme
@@ -64,6 +66,7 @@ Access: https://localhost:5001/
  
  # Addressing Performance
  - At code level, Parallel.foreach and Task.WhenAll can be combined and optimized to get best result querying.
+ - Debounce helps front end rendering to be quick.
  - Though problem looks small, this can easily grow into full blown application. Instead of 100 results it can go up to thousands with multiple people using it.
  - Caching would first cause the issue as memory chace scale up well beyond certain point. 
  - Use the redis/elasticsearch cache on separate node, which can be used by different nodes in a cluster.
