@@ -7,8 +7,8 @@ export default function Home(): ReactElement {
   const initialState: number[] = [];
   const searchEngines: string[] = ['Google', 'Bing'];
 
-  const [keyword, setKeyword] = useState('e-settlements');
-  const [url, setUrl] = useState('www.sympli.com.au');
+  const [keyword, setKeyword] = useState('buy beer');
+  const [url, setUrl] = useState('www.boozebud.com');
   const [searchEngine, setSearchEngine] = useState(searchEngines[0]);
   const [result, setResult] = useState(initialState);
   const [fetched, setFetched] = useState(false);
